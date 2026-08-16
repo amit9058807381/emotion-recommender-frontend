@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Film, Music, BookOpen, PlayCircle, Quote, Book, ChevronRight,
@@ -21,6 +22,12 @@ const features = [
 ];
 
 function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('token'));
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#000015] text-white flex flex-col">
       <nav className="flex items-center justify-between px-8 py-5 border-b border-white/10">
@@ -35,12 +42,23 @@ function Home() {
           <a href="#features" className="hover:text-white">Features</a>
         </div>
         <div className="flex gap-3">
-          <Link to="/login" className="px-4 py-2 rounded-lg border border-white/20 text-sm hover:bg-white/5">
-            Login
-          </Link>
-          <Link to="/register" className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90">
-            Register
-          </Link>
+          {isLoggedIn ? (
+            <Link
+              to="/dashboard"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="px-4 py-2 rounded-lg border border-white/20 text-sm hover:bg-white/5">
+                Login
+              </Link>
+              <Link to="/register" className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90">
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -62,8 +80,11 @@ function Home() {
             motivational videos for you.
           </p>
           <div className="flex gap-4">
-            <Link to="/register" className="flex items-center gap-1 px-6 py-3 rounded-lg font-medium bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90">
-              Get Started <ChevronRight size={18} />
+            <Link
+              to={isLoggedIn ? '/dashboard' : '/register'}
+              className="flex items-center gap-1 px-6 py-3 rounded-lg font-medium bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90"
+            >
+              {isLoggedIn ? 'Go to Dashboard' : 'Get Started'} <ChevronRight size={18} />
             </Link>
             <a href="#features" className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium border border-white/20 hover:bg-white/5">
               Learn More

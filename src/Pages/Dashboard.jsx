@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, Camera, Video, Film, Music } from 'lucide-react';
+import { LogOut, Camera, Video, Film, Music, Quote, BookOpen, Book, X } from 'lucide-react';
 import api from '../services/api';
 
 const emotionColors = {
@@ -24,26 +24,26 @@ const typeOptions = [
   { key: 'video', label: 'Video', icon: Video },
   { key: 'movie', label: 'Movie', icon: Film },
   { key: 'music', label: 'Music', icon: Music },
+  { key: 'quote', label: 'Quote', icon: Quote },
+  { key: 'story', label: 'Story', icon: BookOpen },
+  { key: 'book', label: 'Book', icon: Book },
 ];
 
-// Simple typewriter hook - reveals text character by character
+const typeIcons = { video: Video, movie: Film, music: Music, quote: Quote, story: BookOpen, book: Book };
+
 function useTypewriter(text, speed = 35) {
   const [displayed, setDisplayed] = useState('');
-
   useEffect(() => {
     setDisplayed('');
     if (!text) return;
-
     let i = 0;
     const interval = setInterval(() => {
       i += 1;
       setDisplayed(text.slice(0, i));
       if (i >= text.length) clearInterval(interval);
     }, speed);
-
     return () => clearInterval(interval);
   }, [text, speed]);
-
   return displayed;
 }
 
@@ -58,6 +58,7 @@ function Dashboard() {
   const [loadingRecs, setLoadingRecs] = useState(false);
   const [error, setError] = useState('');
   const [showWebcam, setShowWebcam] = useState(true);
+  const [modalItem, setModalItem] = useState(null);
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
@@ -132,9 +133,15 @@ function Dashboard() {
         contentItemId: contentItem.id,
         emotion,
       });
-      window.open(contentItem.url, '_blank');
     } catch (err) {
       console.error('Failed to record selection', err);
+    }
+
+    if (contentItem.url) {
+      window.open(contentItem.url, '_blank');
+    } else {
+      // No external link (quote/story/book) — show it right here in the dashboard
+      setModalItem(contentItem);
     }
   };
 
@@ -151,17 +158,12 @@ function Dashboard() {
     <div className="min-h-screen bg-[#0a0e1a] text-white">
       <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <Link to="/" className="text-lg font-bold">
-          <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Emotion</span>Recommend
+          <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Emoti</span>Recommend
         </Link>
         <div className="hidden md:flex gap-6 text-sm text-gray-300">
-          <Link to="/" className="hover:text-white" >Home</Link>
-          <a href="/#features" className="hover:text-white" className="hover:underline">Features</a>
-          <Link to="/history" className="hover:text-white" className="hover:underline">History</Link>
+          <Link to="/" className="hover:text-white">Home</Link>
+          <Link to="/history" className="hover:text-white">History</Link>
         </div>
-        {/* <div className="hidden md:flex gap-6 text-sm text-gray-300">
-        <Link to="/" className="hover:text-white">Home</Link>
-        <Link to="/history" className="hover:text-white">History</Link>
-        </div> */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/20 text-sm hover:bg-white/5 transition"
@@ -177,8 +179,11 @@ function Dashboard() {
           </p>
         )}
 
-        {/* Greeting card - always visible, text changes via typewriter */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-5 mb-6 text-center md:text-left">
+        <div
+          className={`bg-white/5 border border-white/10 rounded-2xl px-6 py-5 mb-6 ${
+            emotion ? 'text-left max-w-md' : 'text-center md:text-left'
+          }`}
+        >
           <p className="text-xl font-semibold min-h-[2rem]">
             {typedGreeting}
             <span className="inline-block w-0.5 h-5 bg-purple-400 ml-0.5 align-middle animate-pulse" />
@@ -191,7 +196,6 @@ function Dashboard() {
         </div>
 
         {showWebcam ? (
-          /* PRE-DETECTION LAYOUT: webcam center, mood list right */
           <div className="grid md:grid-cols-[auto_auto] gap-6 items-center justify-center">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 w-full md:w-96 mx-auto">
               <div className="relative rounded-xl overflow-hidden bg-black aspect-video">
@@ -203,7 +207,6 @@ function Dashboard() {
                 )}
               </div>
               <canvas ref={canvasRef} className="hidden" />
-
               <div className="mt-4">
                 {!stream ? (
                   <button
@@ -251,7 +254,7 @@ function Dashboard() {
                   Detected emotion: <span className="font-bold">{emotion}</span>
                 </div>
 
-                <div className="flex gap-2 mb-4">
+                <div className="flex gap-2 mb-4 flex-wrap">
                   {typeOptions.map(({ key, label, icon: Icon }) => (
                     <button
                       key={key}
@@ -270,29 +273,59 @@ function Dashboard() {
                 {loadingRecs && <p className="text-sm text-gray-400 text-center py-4">Loading recommendations...</p>}
 
                 <div className="grid gap-3">
-                  {recommendations.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => handleSelect(item)}
-                      className="flex gap-3 bg-white/5 border border-white/10 rounded-xl p-3 cursor-pointer hover:bg-white/10 transition"
-                    >
-                      <img
-                        src={item.thumbnailUrl}
-                        alt={item.title}
-                        className="w-28 h-16 object-cover rounded-lg flex-shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">{item.title}</p>
-                        <p className="text-xs text-gray-400 line-clamp-2 mt-1">{item.description}</p>
+                  {recommendations.map((item) => {
+                    const Icon = typeIcons[item.type] || Video;
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => handleSelect(item)}
+                        className="flex gap-3 bg-white/5 border border-white/10 rounded-xl p-3 cursor-pointer hover:bg-white/10 transition"
+                      >
+                        {item.thumbnailUrl ? (
+                          <img
+                            src={item.thumbnailUrl}
+                            alt={item.title}
+                            className="w-28 h-16 object-cover rounded-lg flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-28 h-16 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <Icon size={20} className="text-gray-400" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">{item.title}</p>
+                          <p className="text-xs text-gray-400 line-clamp-2 mt-1">{item.description}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
           </div>
         )}
       </div>
+
+      {/* Modal for AI-generated content (quote/story/book) with no external link */}
+      {modalItem && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"
+          onClick={() => setModalItem(null)}
+        >
+          <div
+            className="bg-[#12172a] border border-white/10 rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <h3 className="text-lg font-bold">{modalItem.title}</h3>
+              <button onClick={() => setModalItem(null)} className="text-gray-400 hover:text-white flex-shrink-0">
+                <X size={20} />
+              </button>
+            </div>
+            <p className="text-gray-300 whitespace-pre-line leading-relaxed">{modalItem.description}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
