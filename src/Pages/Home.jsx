@@ -33,13 +33,13 @@ function Home() {
       <nav className="flex items-center justify-between px-8 py-5 border-b border-white/10">
         <div className="text-xl font-bold">
           <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            Emoti
+            Emotion
           </span>
           Recommend
         </div>
         <div className="hidden md:flex gap-8 text-sm text-gray-300">
           <a href="#" className="text-white border-b-2 border-purple-400 pb-1">Home</a>
-          <a href="#features" className="hover:text-white">Features</a>
+          <a href="#features" className="text-white border-b-2 border-purple-400 pb-1">Features</a>
         </div>
         <div className="flex gap-3">
           {isLoggedIn ? (

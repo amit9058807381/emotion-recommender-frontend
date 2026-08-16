@@ -109,6 +109,7 @@ function Dashboard() {
 
   const fetchRecommendations = async (emotionValue, type) => {
     setLoadingRecs(true);
+    setError('');
     try {
       const response = await api.get('/recommendations', {
         params: { userId, emotion: emotionValue, type },
@@ -126,6 +127,12 @@ function Dashboard() {
     if (emotion) fetchRecommendations(emotion, type);
   };
 
+  const getYouTubeEmbedId = (url) => {
+    if (!url) return null;
+    const match = url.match(/[?&]v=([^&]+)/);
+    return match ? match[1] : null;
+  };
+
   const handleSelect = async (contentItem) => {
     try {
       await api.post('/recommendations/select', {
@@ -136,13 +143,7 @@ function Dashboard() {
     } catch (err) {
       console.error('Failed to record selection', err);
     }
-
-    if (contentItem.url) {
-      window.open(contentItem.url, '_blank');
-    } else {
-      // No external link (quote/story/book) — show it right here in the dashboard
-      setModalItem(contentItem);
-    }
+    setModalItem(contentItem);
   };
 
   const handleLogout = () => {
@@ -158,11 +159,11 @@ function Dashboard() {
     <div className="min-h-screen bg-[#0a0e1a] text-white">
       <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <Link to="/" className="text-lg font-bold">
-          <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Emoti</span>Recommend
+          <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Emotion</span>Recommend
         </Link>
         <div className="hidden md:flex gap-6 text-sm text-gray-300">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <Link to="/history" className="hover:text-white">History</Link>
+          <Link to="/" className="text-white border-b-2 border-purple-400 pb-1">Home</Link>
+          <Link to="/history" className="text-white border-b-2 border-purple-400 pb-1">History</Link>
         </div>
         <button
           onClick={handleLogout}
@@ -306,14 +307,13 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Modal for AI-generated content (quote/story/book) with no external link */}
       {modalItem && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"
           onClick={() => setModalItem(null)}
         >
           <div
-            className="bg-[#12172a] border border-white/10 rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"
+            className="bg-[#12172a] border border-white/10 rounded-2xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 mb-4">
@@ -322,7 +322,21 @@ function Dashboard() {
                 <X size={20} />
               </button>
             </div>
-            <p className="text-gray-300 whitespace-pre-line leading-relaxed">{modalItem.description}</p>
+
+            {modalItem.url && getYouTubeEmbedId(modalItem.url) ? (
+              <div className="aspect-video rounded-lg overflow-hidden mb-3">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${getYouTubeEmbedId(modalItem.url)}?autoplay=1`}
+                  title={modalItem.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <p className="text-gray-300 whitespace-pre-line leading-relaxed">{modalItem.description}</p>
+            )}
           </div>
         </div>
       )}
