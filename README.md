@@ -1,16 +1,58 @@
-# React + Vite
+# Emotion-Based Recommendation System — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for an AI-powered emotion-aware recommendation system. Captures a user's webcam image, sends it to the backend for emotion detection, and displays personalized movie/music/video recommendations.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React** (Vite)
+- **Tailwind CSS**
+- **React Router**
+- **Axios**
+- **Lucide React** (icons)
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Register / Login (email & password)
+- Google OAuth login
+- Webcam-based emotion capture and detection
+- Emotion-based recommendations (movies, music, videos) with content-type switching
+- Engagement tracking (clicking a recommendation improves future ranking)
+- Responsive, mobile-friendly, dark-themed UI
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js and npm
+- The backend service running (see [backend repo](https://github.com/amit9058807381/emotion-recommender-backend))
+
+## Running Locally
+
+```bash
+git clone https://github.com/amit9058807381/emotion-recommender-frontend.git
+cd emotion-recommender-frontend
+npm install
+npm run dev
+```
+
+App runs on `http://localhost:5173` by default.
+
+> Make sure the backend is running on `http://localhost:8081` (or update the base URL in `src/services/api.js`).
+
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | Landing/home page |
+| `/register` | User registration |
+| `/login` | User login (email/password or Google) |
+| `/oauth-success` | Handles the redirect after Google login |
+| `/dashboard` | Webcam capture, emotion detection, recommendations |
+
+## Project Structure
+src/
+├── pages/ Page components (Home, Login, Register, Dashboard, etc.)
+├── services/ Axios instance / API calls
+└── App.jsx Route definitions
+
+## Author
+
+Amit — College Project (Statement of Purpose: Emotion-Based Personalized Recommendation System)
