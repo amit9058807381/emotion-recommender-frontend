@@ -151,12 +151,17 @@ function Dashboard() {
     <div className="min-h-screen bg-[#0a0e1a] text-white">
       <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <Link to="/" className="text-lg font-bold">
-          <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Emoti</span>Recommend
+          <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Emotion</span>Recommend
         </Link>
         <div className="hidden md:flex gap-6 text-sm text-gray-300">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <a href="/#features" className="hover:text-white">Features</a>
+          <Link to="/" className="hover:text-white" >Home</Link>
+          <a href="/#features" className="hover:text-white" className="hover:underline">Features</a>
+          <Link to="/history" className="hover:text-white" className="hover:underline">History</Link>
         </div>
+        {/* <div className="hidden md:flex gap-6 text-sm text-gray-300">
+        <Link to="/" className="hover:text-white">Home</Link>
+        <Link to="/history" className="hover:text-white">History</Link>
+        </div> */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/20 text-sm hover:bg-white/5 transition"
