@@ -48,10 +48,10 @@ App runs on `http://localhost:5173` by default.
 | `/dashboard` | Webcam capture, emotion detection, recommendations |
 
 ## Project Structure
-src/
-├── pages/ Page components (Home, Login, Register, Dashboard, etc.)
-├── services/ Axios instance / API calls
-└── App.jsx Route definitions
+
+- `src/pages/` — Page components (Home, Login, Register, Dashboard, etc.)
+- `src/services/` — Axios instance / API calls
+- `src/App.jsx` — Route definitions
 
 ## Author
 
